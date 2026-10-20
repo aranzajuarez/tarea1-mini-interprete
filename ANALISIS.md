@@ -103,19 +103,24 @@ Agregamos 7 nuevas pruebas en `tests/test_evaluator.py`.
 ## 4. Los defectos
 
 ### 4.1 ¿Qué defecto reveló primero una prueba nueva?
+Reveló que había un error en el código, dado que no se respetaba la asociatividad a la izquierda en operadores con la misma precedencia sin paréntesis, usamos ejemplos de resta y división.
 
 ### 4.2 ¿Por qué el comportamiento observado era incorrecto?
 
 > No basta con "daba mal". Digan contra qué lo están comparando: qué regla,
 > qué línea de la semántica declarada del README.
 
+En la especificación del README y la semántica estándar de expresiones aritméticas, es decir la Jerarquía se Operaciones, los operadores del mismo nivel se deben asociar de izquierda a derecha, así en nuestro ejemplo al evaluar la entrada `"10 - 3 - 2"`, el programa arrojaba el valor de `9`, dado que agrupaba las operaciones de derecha a izquierda, realizando `10 - (3 - 2) = 10 - 1 = 9`. Según la semántica vista, debería de haberse agrupado como `(10 - 3) - 2 = 5`.
+
 ### 4.3 ¿Qué cambio realizaron?
 
 | Defecto | Entrada que lo revela | Daba | Debería dar | Commit rojo | Commit verde |
 |---|---|---|---|---|---|
-| | | | | | |
+| Asociatividad a la derecha en resta | `"10 - 3 - 2"` | `9` | `5` | `236becc` | `052250b` |
+| Asociatividad a la derecha en división | `"12 / 4 / 2"` | `6.0` | `1.5` | `236becc` | `052250b` |
 
 ### 4.4 ¿Cómo saben que la corrección es general y no sólo hace pasar ese ejemplo?
+Porque se cambió el mecanismo de construcción del AST en la gramática del `Parser`. Al sustituir la llamada recursiva por un bucle iterativo `while` (`nodo = OperacionBinaria(op, nodo, derecho)`), la estructura de acumulación nos garanizará que los operadores de la misma precedencia en una secuencia se acumularán en un subárbol a la izquierda, sin importar el tamaño de la cadena presentada. 
 
 ---
 

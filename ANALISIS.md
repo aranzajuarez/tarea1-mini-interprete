@@ -71,6 +71,15 @@
 
 > Ésta es la pregunta importante de toda la tarea. Tómense su tiempo.
 
+1. **Asociatividad de operadores de la misma precedencia**
+Notemos que revisamos operaciones de 2 números y 1 operador, pero ¿Qué sucede si tenemos varios operadores del mismo tipo? Según la jerarquía de operaciones, deberán de realizarse de izquierda a derecha, pero falta corroborar que suceda. Además, no probamos cuando se agregan varias veces el mismo operador, ejemplo 10 - 3 - 2 - 1 o 40 / 8 / 5
+2. **Números negativos** 
+No probamos si en el lexer son admitidas operaciones con valores numéricos negativos, ejemplo  `-34` o `-(2 + 8)`.
+3. **Errores de sintaxis específicos en paréntesis:** 
+No se incluyeron pruebas que revisen entradas inválidas con paréntesis vacíos `()` o paréntesis que no se cerraron.
+4. **Casos frontera con cero en operaciones válidas:** 
+No se revisaron casos que presenten al cero, es decir como neutro aditivo o al multiplicarlo (por ejemplo `0 + 5` o `1 * 0`).
+
 ---
 
 ## 3. Las pruebas que agregaron

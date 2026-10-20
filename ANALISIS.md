@@ -1,9 +1,7 @@
 # Análisis — Tarea 1
 
 **Integrantes:**
-1.
-2.
-3.
+1. Aranza López Juárez
 
 **Fork:**
 **Rama:**
@@ -19,21 +17,24 @@
 
 | Componente | Qué recibe | Qué entrega | De qué es responsable |
 |---|---|---|---|
-| `lexer` | | | |
-| `parser` | | | |
-| `ast` | | | |
-| `evaluator` | | | |
+| `lexer` | `str` (texto) | `list[Token]` | Convierte la cadena de texto plano en una secuencia estructurada de tokens, ignorando espacios. |
+| `parser` | `list[Token]` | `NodoAST` | Analiza la estructura gramatical dada por los tokens y construye el Árbol de Sintaxis Abstracta (AST) |
+| `ast` | N/A (Clases) | Estructura de nodos | Define las clases de los nodos jerárquicos de la expresión en memoria (números y operaciones). |
+| `evaluator` | `NodoAST` | `int` o `float` | Recorre recursivamente el AST y calcula el valor numérico final de la expresión. |
 
 ### 1.2 ¿Qué recorrido sigue una expresión desde que se recibe como texto hasta que produce un resultado?
 
 > Usen `(3 + 4) * 2` como ejemplo y muestren cómo se ve entre etapa y etapa.
 
+### 1.2 ¿Qué recorrido sigue una expresión desde que se recibe como texto hasta que produce un resultado?
+
 | Etapa | Cómo se ve `(3 + 4) * 2` aquí |
 |---|---|
 | texto | `"(3 + 4) * 2"` |
-| tokens | |
-| AST | |
-| resultado | |
+| tokens | `[PAR_IZQ, NUMERO(3), MAS, NUMERO(4), PAR_DER, POR, NUMERO(2)]` |
+| AST | `Multiplicacion(Suma(3, 4), 2)` |
+| resultado | `14` |
+
 
 > Para el renglón del AST, dibújenlo **primero ustedes** y después comprueben
 > con `python3 interprete.py --arbol "(3 + 4) * 2"`. Si su dibujo y el del

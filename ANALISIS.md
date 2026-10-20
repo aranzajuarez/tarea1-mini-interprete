@@ -131,10 +131,15 @@ Porque se cambió el mecanismo de construcción del AST en la gramática del `Pa
 > Al menos dos. Usen el vocabulario de clase: duplicación, rigidez,
 > acoplamiento alto, condicionales repetidos, amplificación del cambio.
 
+1. **Duplicación de lógica de parseo en `Parser`:** Los métodos `_expresion` y `_termino` comparten exactamente la misma estructura de control e iteración, diferenciándose únicamente en el conjunto de tokens de operadores (`OPERADORES_SUMA` vs `OPERADORES_PRODUCTO`) y en el siguiente nivel de precedencia que invocan (`_termino` vs `_factor`).
+2. **Condicionales repetidos / Rigidez para añadir operadores:** Para agregar un nuevo operador (como `%` o `**`), hay que modificar manualmente las tuplas de tipos de tokens y alterar o añadir nuevos métodos en el `Parser`, aumentando la probabilidad de errores por modificación en múltiples lugares (**amplificación del cambio**).
+
 ### 5.2 ¿Qué refactorización realizaron, y por qué conserva el comportamiento?
 
 > "Las pruebas siguen pasando" es parte de la respuesta, pero no toda.
 > ¿Por qué el cambio es equivalente?
+
+Se refactorizaron los métodos de `_expresion` y `_termino` para usar bucles iterativos `while`. Se conserva el comportamiento porque es un cambio estructural equivalente en las expresiones de 2 términos (caso base), pero se corrige la precedencia al asociar hacia la izquierda en expresiones de 3 o más términos. Las 20 pruebas automáticas en `pytest` certifican que no hubo regresiones.
 
 ### 5.3 ¿Sería pertinente usar Factory Method, Adapter o ninguno?
 
@@ -142,9 +147,16 @@ Porque se cambió el mecanismo de construcción del AST en la gramática del `Pa
 > digan qué problema concreto resuelve y qué costo tiene. Si dicen que no,
 > digan qué tendría que cambiar en el sistema para que empezara a convenir.
 
-### 5.4 ¿Qué parte del sistema sería más difícil de modificar si se agregara un operador nuevo?
+**Ninguno.**
+- **Factory Method:** No es necesario porque la creación de nodos de AST (`Numero`, `OperacionBinaria`) es directa.
+- **Adapter:** No hay interfaces incompatibles de terceros ni librerías externas que requerimos adaptar al sistema.
+- **Costo de agregarlos:** Introducir cualquiera de estos patrones añadiría clases abstractas e indirecciones innecesarias para la escala actual de la tarea.
 
-> Por ejemplo `%`. ¿Cuántos archivos hay que tocar? ¿Por qué?
+### 5.4 ¿Qué parte del sistema sería más difícil de modificar si se agregara un operador nuevo?
+La parte más compleja de modificar sería el **`Parser`**, seguido del **`Lexer`** y el **`Evaluator`**:
+1. En el **`Lexer`**: Añadir el nuevo `TipoToken` y su regla en la tokenización.
+2. En el **`Parser`**: Asignar el operador al nivel de precedencia adecuado o crear un nuevo método si tiene una precedencia distinta (por ejemplo, potencia `**`), modificando las tuplas de operadores.
+3. En el **`Evaluator`**: Añadir la rama correspondiente en la evaluación del AST.
 
 ---
 

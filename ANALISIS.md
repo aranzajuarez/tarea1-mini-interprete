@@ -44,12 +44,23 @@
 ---
 
 ## 2. Las pruebas que ya estaban
-
 ### 2.1 ¿Qué pruebas venían incluidas?
 
 | Prueba | Componente | Comportamiento que verifica | ¿Cuántos operadores usa? | ¿Normal, frontera o inválida? |
 |---|---|---|---|---|
-| | | | | |
+| `test_suma` | `evaluator` | Evalúa el resultado numérico de una suma (`3 + 4` = `7`) | 1 | Normal |
+| `test_resta` | `evaluator` | Evalúa el resultado numérico de una resta (`10 - 3` = `7`) | 1 | Normal |
+| `test_multiplicacion` | `evaluator` | Evalúa el resultado numérico de una multiplicación (`6 * 7` = `42`) | 1 | Normal |
+| `test_division` | `evaluator` | Evalúa el resultado numérico de una división (`10 / 2` = `5`) | 1 | Normal |
+| `test_precedencia_sin_parentesis` | `evaluator` | Respeta la jerarquía de operaciones al realizar primero la multiplicación y después la suma (`3 + 4 * 2` = `11`) | 2 | Normal |
+| `test_precedencia_con_parentesis` | `evaluator` | Respeta el orden al realizar primer las operaciones dentro del paréntesis y luego las que estén fuera (`(3 + 4) * 2` = `14`) | 2 | Normal |
+| `test_tokeniza_un_numero_solo` | `lexer` | Convierte una cadena con solo un número entero en un único token de número | 0 | Normal |
+| `test_tokeniza_una_suma` | `lexer` | Convierte la expresión `"3+4"` en tokens de número y suma, dando además sus posiciones | 1 | Normal |
+| `test_los_espacios_no_producen_tokens` | `lexer` | Verifica que los espacios en blanco no generen tokens adicionales, obteniendo 3 tokens en la operación ("   3    +    4    ") | 1 | Normal |
+| `test_tokeniza_parentesis` | `lexer` | Reconoce correctamente los tokens de paréntesis izquierdo, número y paréntesis derecho | 0 | Normal |
+| `test_construye_el_arbol_de_una_suma` | `parser` | Construye el AST correcto para una suma simple (`3 + 4`) | 1 | Normal |
+| `test_la_multiplicacion_se_agrupa_antes_que_la_suma` | `parser` | Verifica que `*` se agrupe como subárbol dentro de `+` respetando precedencia | 2 | Normal |
+| `test_los_parentesis_cambian_la_agrupacion` | `parser` | Verifica que los paréntesis alteren la agrupación en el AST de la multiplicación, al realizar primero la operación dentro de estos | 2 | Normal |
 
 > Llenen la tabla **completa**, con las 13. Es tediosa a propósito: la única
 > forma de saber qué no está cubierto es caracterizar sistemáticamente lo que

@@ -84,11 +84,19 @@ No se revisaron casos que presenten al cero, es decir como neutro aditivo o al m
 
 ## 3. Las pruebas que agregaron
 
+Agregamos 7 nuevas pruebas en `tests/test_evaluator.py`.
+
 ### 3.1 ¿Cuáles son casos normales, cuáles frontera y cuáles inválidos?
 
 | Prueba (archivo::nombre) | Entrada | Esperado | Categoría | ¿Por qué esa categoría? |
 |---|---|---|---|---|
-| | | | | |
+| `tests/test_evaluator.py::test_evalua_multiples_operaciones_combinadas` | `"10 + 5 - 2"` | `13` | Caso Normal | Evalúa la combinación de múltiples operadores de la misma precedencia en una expresión lineal. |
+| `tests/test_evaluator.py::test_evalua_expresion_con_subparentesis` | `"(10 + 2) * (8 / 4)"` | `24.0` | Caso Normal | Valida la evaluación correcta de múltiples subexpresiones agrupadas por paréntesis. |
+| `tests/test_evaluator.py::test_evalua_restas_encadenadas_asociatividad` | `"10 - 3 - 2"` | `5` | Caso Frontera | Revisa el funcionamiento de la asociatividad en restas continuas sin paréntesis, revela la asociatividad a la derecha del código. |
+| `tests/test_evaluator.py::test_evalua_divisiones_encadenadas_asociatividad` | `"12 / 4 / 2"` | `1.5` | Caso Frontera | Revisa la asociatividad a la izquierda en divisiones sucesivas, evaluando la presición aritmetica. |
+| `tests/test_evaluator.py::test_evalua_division_entre_cero` | `"10 / 0"` | Lanza `ErrorDeEvaluacion` | Caso Frontera | Controla la excepción en el límite aritmético de división por cero evitando que falle el sistema con un error no controlado. |
+| `tests/test_evaluator.py::test_rechaza_menos_unario` | `"-3"` | Lanza `ErrorDeSintaxis` | Entrada Inválida | Valida el rechazo sintáctico de números negativos directos no permitidos por la gramática declarada. |
+| `tests/test_evaluator.py::test_rechaza_parentesis_vacios` | `"()"` | Lanza `ErrorDeSintaxis` | Entrada Inválida | Comprueba la detección inmediata de agrupaciones vacías sin expresiones válidas en su interior. |
 
 ---
 

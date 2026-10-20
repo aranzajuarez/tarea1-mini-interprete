@@ -42,24 +42,30 @@ class Parser:
         return token
 
     def _expresion(self):
-        izquierda = self._termino()
-        actual = self._actual()
-        if actual is not None and actual.tipo in OPERADORES_SUMA:
+        nodo = self._termino()
+        while self._actual() is not None and self._actual().tipo in OPERADORES_SUMA:
             operador = self._avanzar()
-            derecha = self._expresion()
-            return OperacionBinaria(operador.valor, izquierda, derecha)
-        return izquierda
+            derecho = self._termino()
+            nodo = OperacionBinaria(operador.valor, nodo, derecho)
+        return nodo
 
+ # En esta función anteriormente al tener definido un if el parser obligaba a que el token actual fuera un factor, es decir, 
+ # realizaba asociatividad a la derecha, haciendo en la operación del test "10 - 3 -2" el árbol  "10 - (3 - 2)", dando como 
+ # resultado 9 en lugar de 5, pero ahora se hace el while para que el parser pueda tomar los operadores de izquierda a derecha, 
+ # haciendo que el árbol sea "(10 - 3) - 2" y dando como resultado 5.
     def _termino(self):
-        izquierda = self._factor()
-        actual = self._actual()
-        if actual is not None and actual.tipo in OPERADORES_PRODUCTO:
+        nodo = self._factor()
+        while self._actual() is not None and self._actual().tipo in OPERADORES_PRODUCTO:
             operador = self._avanzar()
-            derecha = self._termino()
-            return OperacionBinaria(operador.valor, izquierda, derecha)
-        return izquierda
+            derecho = self._factor()
+            nodo = OperacionBinaria(operador.valor, nodo, derecho)
+        return nodo
 
     def _factor(self):
+        token = self._actual()
+        if token is None:
+            raise ErrorDeSintaxis("se esperaba un expresion", self.pos)
+
         token = self._avanzar()
 
         if token.tipo == TipoToken.NUMERO:
@@ -67,9 +73,10 @@ class Parser:
 
         if token.tipo == TipoToken.PAR_IZQ:
             nodo = self._expresion()
-            cierre = self._avanzar()
-            if cierre.tipo != TipoToken.PAR_DER:
-                raise ErrorDeSintaxis("se esperaba ')'", cierre.posicion)
+            if self._actual() is None or self._actual().tipo != TipoToken.PAR_DER:
+                pos = self._actual().posicion if self._actual() else token.posicion
+                raise ErrorDeSintaxis("se esperaba ')'", pos)
+            self._avanzar()
             return nodo
 
         raise ErrorDeSintaxis(f"token inesperado {token.valor!r}", token.posicion)
